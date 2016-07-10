@@ -1,16 +1,6 @@
-Alg Main;
+Program HelloWorld;
 
-Function AA  : SemCasaDecimal;
-:)
-a <- 4;
-
-:(;
-Legenda
-    K : CharPointerMelhorado;
-    N : SemCasaDecimal;
-:)
-        BebaEnquanto( a < 2)
-        :)
-                a <- 6          ;
-        :(;
-:(.
+Begin
+  WriteLn( 'hello, world' );
+  Writeln( 3 );
+END.
