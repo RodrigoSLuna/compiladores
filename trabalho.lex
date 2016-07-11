@@ -12,7 +12,7 @@ Algoritmo 	Algoritmo
 WRITELN		[Ww][Rr][Ii][Tt][Ee][Ll][Nn]
 WRITE		[Ww][Rr][Ii][Tt][Ee]
 SemCasaDecimal	SemCasaDecimal
-STRING		[Ss][Tt][Rr][Ii][Nn][Gg]
+CharPointerMelhorado	CharPointerMelhorado
 VAR		[Vv][Aa][Rr]
 SERA_QUE	SERA_QUE
 ELSE		[Ee][Ll][Ss][Ee]
@@ -32,7 +32,7 @@ CTE_INTEGER {DIGITO}+
 
 {WRITELN} 	{ trata_folha(); return _WRITELN; }
 {WRITE} 	{ trata_folha(); return _WRITE; }
-{STRING} 	{ trata_folha(); return _STRING; }
+{CharPointerMelhorado} 	{ trata_folha(); return _STRING; }
 {SemCasaDecimal} { trata_folha(); return _INTEGER; }
 {VAR} 		{ trata_folha(); return _VAR; }
 {SERA_QUE} 	{ trata_folha(); return _IF; }
