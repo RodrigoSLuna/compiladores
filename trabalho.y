@@ -19,7 +19,7 @@ void yyerror(const char *);
 %}
 
 %token _ID _PROGRAM _BEGIN _END _WRITELN _WRITE _VAR _IF _THEN _ELSE
-%token _FOR _TO _DO _ATRIB _FUNCTION _WHILE
+%token _FOR _TO _DO _ATRIB _FUNCTION
 %token _INTEGER _STRING
 
 %token _CTE_STRING _CTE_INTEGER
@@ -80,8 +80,8 @@ TAM_STRING : '[' _CTE_INTEGER ']'
      
 IDS : _ID ',' IDS
     | _ID
-    ;
-
+    ;      
+   
 PRINCIPAL : _BEGIN CMDS _END '.'
             { $$.c = "int main() {\n" + $2.c + "}\n"; }
           ;
@@ -95,7 +95,6 @@ CMD : SAIDA
     | CMD_FOR
     | BLOCO
     | CMD_ATRIB
-    | CMD_WHILE
     ;
     
 CMD_ATRIB : _ID INDICE _ATRIB E
@@ -107,10 +106,8 @@ INDICE : '[' EXPS ']' INDICE
        
 EXPS : E ',' EXPS
      | E
-     ;
-
-CMD_WHILE : _WHILE '(' E ')' CMD 
-
+     ;        
+    
 CMD_FOR : _FOR _ID _ATRIB E _TO E _DO CMD
         ;
     
@@ -129,11 +126,6 @@ SAIDA : _WRITE '(' E ')'
    
 E : E '+' E
   | E '>' E
-  | E '-' E
-  | E '*' E
-  | E '/' E
-  | E '<' E
-  | E '=' E
   | F
   ;
   
@@ -159,4 +151,4 @@ int main( int argc, char* argv[] )
 {
   yyparse();
 }
-    
+
