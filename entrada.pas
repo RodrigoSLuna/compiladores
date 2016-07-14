@@ -1,19 +1,15 @@
 Alg Main;
 
-Function AA  : SemCasaDecimal;
+Function AA ( a : SemCasaDecimal ) : SemCasaDecimal;
 :)
-a <- 4;
-
+    a <- 4;
 :(;
 Legenda
-    K : CharPointerMelhorado;
-    N : SemCasaDecimal;
+    K[5] : CharPointerMelhorado;
+    N[5] : SemCasaDecimal;
 :)
+    
     BebaEnquanto(a < 5)
     :)    
-        if a>b then
-        :)
-            write( ' 1 ' );
-        :(;
-    :(;
+   :(; 
 :(.

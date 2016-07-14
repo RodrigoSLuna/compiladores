@@ -473,12 +473,12 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    34,    34,    38,    44,    47,    50,    51,    54,    55,
-      58,    59,    62,    65,    66,    69,    70,    73,    74,    77,
-      78,    80,    81,    84,    88,    89,    92,    93,    94,    95,
-      96,    97,   101,   105,   106,   109,   110,   113,   116,   119,
-     123,   125,   131,   133,   137,   139,   141,   143,   145,   147,
-     149,   151,   152,   155,   156,   157
+       0,    34,    34,    38,    44,    47,    50,    51,    54,    56,
+      60,    61,    64,    68,    70,    74,    76,    80,    81,    84,
+      86,    88,    89,    92,    96,    97,   100,   101,   102,   103,
+     104,   105,   109,   113,   114,   117,   118,   121,   124,   127,
+     131,   133,   139,   141,   145,   147,   149,   151,   153,   155,
+     157,   159,   160,   163,   164,   165
 };
 #endif
 
@@ -1471,7 +1471,7 @@ yyreduce:
     {
         case 2:
 #line 35 "trabalho.y"
-    { cout << (yyvsp[(1) - (3)]).c << (yyvsp[(3) - (3)]).c << endl;}
+    { cout << (yyvsp[(1) - (3)]).c << (yyvsp[(2) - (3)]).c <<  (yyvsp[(3) - (3)]).c << endl;}
     break;
 
   case 3:
@@ -1483,7 +1483,7 @@ yyreduce:
 
   case 4:
 #line 45 "trabalho.y"
-    { (yyval).c = (yyvsp[(1) - (2)]).c + (yyvsp[(2) - (2)]).c ;}
+    { (yyval).c = (yyvsp[(1) - (2)]).c + (yyvsp[(2) - (2)]).c ; }
     break;
 
   case 5:
@@ -1491,135 +1491,180 @@ yyreduce:
     {(yyval).c = "" ;}
     break;
 
-  case 23:
+  case 7:
+#line 51 "trabalho.y"
+    {}
+    break;
+
+  case 8:
+#line 55 "trabalho.y"
+    {(yyval).c = m[(yyvsp[(7) - (10)]).v] + " " + (yyvsp[(2) - (10)]).v + "(" + (yyvsp[(4) - (10)]).c   + ")" + (yyvsp[(9) - (10)]).c  + "\n"; }
+    break;
+
+  case 9:
+#line 57 "trabalho.y"
+    {(yyval).c = m[(yyvsp[(4) - (7)]).v] + " " + (yyvsp[(2) - (7)]).v + "(  )" + (yyvsp[(6) - (7)]).c  + "\n"; }
+    break;
+
+  case 12:
+#line 65 "trabalho.y"
+    {(yyval) = (yyvsp[(2) - (2)]);}
+    break;
+
+  case 13:
+#line 69 "trabalho.y"
+    { (yyval).c =  (yyvsp[(1) - (3)]).c + ';' + (yyvsp[(3) - (3)]).c;}
+    break;
+
+  case 14:
+#line 71 "trabalho.y"
+    { (yyval).c = "\n" + (yyvsp[(1) - (2)]).c + ";\n" ;}
+    break;
+
+  case 15:
+#line 75 "trabalho.y"
+    {(yyval).c =  m[(yyvsp[(3) - (3)]).v] + " " + (yyvsp[(1) - (3)]).v ;}
+    break;
+
+  case 16:
+#line 77 "trabalho.y"
+    { (yyval).c = m[(yyvsp[(6) - (6)]).v] + " "  + (yyvsp[(1) - (6)]).v + '[' + (yyvsp[(3) - (6)]).v +']'     ;}
+    break;
+
+  case 19:
 #line 85 "trabalho.y"
+    { (yyval).c = '['+ (yyvsp[(2) - (3)]).v + ']'; cout << "Here2 " << endl;  }
+    break;
+
+  case 23:
+#line 93 "trabalho.y"
     { (yyval).c = "int main() {\n" + (yyvsp[(2) - (4)]).c + "}\n";}
     break;
 
   case 24:
-#line 88 "trabalho.y"
+#line 96 "trabalho.y"
     { (yyval).c = (yyvsp[(1) - (3)]).c + (yyvsp[(3) - (3)]).c;}
     break;
 
   case 25:
-#line 89 "trabalho.y"
+#line 97 "trabalho.y"
     {(yyval).c = "";}
     break;
 
   case 27:
-#line 93 "trabalho.y"
-    {(yyval).c = (yyvsp[(1) - (1)]).c;}
+#line 101 "trabalho.y"
+    {(yyval).c = (yyvsp[(1) - (1)]).c;  }
     break;
 
   case 28:
-#line 94 "trabalho.y"
+#line 102 "trabalho.y"
     {(yyval).c = (yyvsp[(1) - (1)]).c;}
     break;
 
   case 29:
-#line 95 "trabalho.y"
+#line 103 "trabalho.y"
     {(yyval).c = (yyvsp[(1) - (1)]).c;}
     break;
 
   case 30:
-#line 96 "trabalho.y"
+#line 104 "trabalho.y"
     {(yyval).c = (yyvsp[(1) - (1)]).c;}
     break;
 
   case 31:
-#line 97 "trabalho.y"
+#line 105 "trabalho.y"
     {(yyval).c = (yyvsp[(1) - (1)]).c;}
     break;
 
   case 32:
-#line 102 "trabalho.y"
+#line 110 "trabalho.y"
     { (yyval).c = (yyvsp[(1) - (4)]).v + m[(yyvsp[(3) - (4)]).v] + (yyvsp[(4) - (4)]).v;}
     break;
 
   case 37:
-#line 114 "trabalho.y"
+#line 122 "trabalho.y"
     { (yyval).c = " while( " + (yyvsp[(3) - (5)]).v +" )\n" + (yyvsp[(5) - (5)]).c + "\n\n";}
     break;
 
   case 39:
-#line 120 "trabalho.y"
+#line 128 "trabalho.y"
     { (yyval).c = m[(yyvsp[(1) - (3)]).v] + "\t" +  (yyvsp[(2) - (3)]).c + m[(yyvsp[(3) - (3)]).v] + "\t"; }
     break;
 
   case 40:
-#line 124 "trabalho.y"
-    { (yyval).c = (yyvsp[(1) - (4)]).v  + "( " + (yyvsp[(2) - (4)]).v + " )" + "\n" + "  " + (yyvsp[(4) - (4)]).c + "\n"; cout << "->>" << (yyvsp[(1) - (4)]).v << endl; }
+#line 132 "trabalho.y"
+    { (yyval).c = (yyvsp[(1) - (4)]).v  + "( " + (yyvsp[(2) - (4)]).v + " )" + "\n" + "  " + (yyvsp[(4) - (4)]).c + "\n"; }
     break;
 
   case 41:
-#line 126 "trabalho.y"
+#line 134 "trabalho.y"
     { (yyval).c = (yyvsp[(1) - (6)]).v + " " + (yyvsp[(2) - (6)]).v + "\n" + "  " + (yyvsp[(4) - (6)]).c + "\n" + 
               (yyvsp[(5) - (6)]).v + " " + (yyvsp[(6) - (6)]).c; }
     break;
 
   case 42:
-#line 132 "trabalho.y"
+#line 140 "trabalho.y"
     { (yyval).c = "  printf( \"%"+ (yyvsp[(3) - (4)]).t + "\", " + (yyvsp[(3) - (4)]).v + " );\n";}
     break;
 
   case 43:
-#line 134 "trabalho.y"
+#line 142 "trabalho.y"
     { (yyval).c = "  printf( \"%"+ (yyvsp[(3) - (4)]).t + "\\n\", " + (yyvsp[(3) - (4)]).v + " );\n";}
     break;
 
   case 44:
-#line 138 "trabalho.y"
-    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
-    break;
-
-  case 45:
-#line 140 "trabalho.y"
-    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
-    break;
-
-  case 46:
-#line 142 "trabalho.y"
-    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
-    break;
-
-  case 47:
-#line 144 "trabalho.y"
-    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
-    break;
-
-  case 48:
 #line 146 "trabalho.y"
     { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
     break;
 
-  case 49:
+  case 45:
 #line 148 "trabalho.y"
     { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
     break;
 
-  case 50:
+  case 46:
 #line 150 "trabalho.y"
     { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
     break;
 
+  case 47:
+#line 152 "trabalho.y"
+    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
+    break;
+
+  case 48:
+#line 154 "trabalho.y"
+    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
+    break;
+
+  case 49:
+#line 156 "trabalho.y"
+    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
+    break;
+
+  case 50:
+#line 158 "trabalho.y"
+    { (yyval).v = (yyvsp[(1) - (3)]).v + (yyvsp[(2) - (3)]).v + (yyvsp[(3) - (3)]).v;}
+    break;
+
   case 53:
-#line 155 "trabalho.y"
+#line 163 "trabalho.y"
     { (yyval) = (yyvsp[(1) - (1)]); (yyval).t = "s"; }
     break;
 
   case 54:
-#line 156 "trabalho.y"
+#line 164 "trabalho.y"
     { (yyval) = (yyvsp[(1) - (1)]); (yyval).t = "d";}
     break;
 
   case 55:
-#line 157 "trabalho.y"
+#line 165 "trabalho.y"
     { (yyval) = (yyvsp[(1) - (1)]); (yyval).t = "s";}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1623 "y.tab.c"
+#line 1668 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1833,7 +1878,7 @@ yyreturn:
 }
 
 
-#line 160 "trabalho.y"
+#line 168 "trabalho.y"
 
 
 #include "lex.yy.c"
@@ -1852,6 +1897,8 @@ int main( int argc, char* argv[] )
   m[":)"] = "{";
   m[":("] = "}";
   m["<-"] = "=";
+  m["SemCasaDecimal"] = "int";
+  m["CharPointerMelhorado"] = "char";
   yyparse();
 }
 

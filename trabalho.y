@@ -32,7 +32,7 @@ void yyerror(const char *);
 %%
 
 S : NOME MIOLOS PRINCIPAL 
-    { cout << $1.c << $3.c << endl;}
+    { cout << $1.c << $2.c <<  $3.c << endl;}
   ;
    
 NOME : _PROGRAM _ID ';'
@@ -42,17 +42,19 @@ NOME : _PROGRAM _ID ';'
      ;
    
 MIOLOS : MIOLO MIOLOS 
-        { $$.c = $1.c + $2.c ;}
+        { $$.c = $1.c + $2.c ; }
        | 
         {$$.c = "" ;}
        ;
        
 MIOLO : VARS 
-      | FUNCTION 
+      | FUNCTION {}
       ;          
    
 FUNCTION : _FUNCTION _ID '(' PARAMETROS ')' ':' TIPO ';' BLOCO ';'
+             {$$.c = m[$7.v] + " " + $2.v + "(" + $4.c   + ")" + $9.c  + "\n"; }
          | _FUNCTION _ID ':' TIPO ';' BLOCO ';'
+            {$$.c = m[$4.v] + " " + $2.v + "(  )" + $6.c  + "\n"; }   
          ;    
          
 PARAMETROS : DECL ';' PARAMETROS
@@ -60,14 +62,19 @@ PARAMETROS : DECL ';' PARAMETROS
            ;         
    
 VARS : _VAR DECLS
+     {$$ = $2;}
      ;
      
 DECLS : DECL ';' DECLS
+      { $$.c =  $1.c + ';' + $3.c;}
       | DECL ';'
+      { $$.c = "\n" + $1.c + ";\n" ;}
       ;   
      
-DECL : IDS ':' TIPO    
-     | IDS '[' _CTE_INTEGER ']' ':' TIPO
+DECL : IDS ':' TIPO
+     {$$.c =  m[$3.v] + " " + $1.v ;}
+     | IDS '[' _CTE_INTEGER ']' ':' TIPO 
+     { $$.c = m[$6.v] + " "  + $1.v + '[' + $3.v +']'     ;}
      ;
      
 TIPO : _INTEGER
@@ -75,6 +82,7 @@ TIPO : _INTEGER
      ;
      
 TAM_STRING : '[' _CTE_INTEGER ']'
+            { $$.c = '['+ $2.v + ']'; cout << "Here2 " << endl;  }
            |
            ;     
 IDS : _ID ',' IDS
@@ -90,7 +98,7 @@ CMDS : CMD ';' CMDS { $$.c = $1.c + $3.c;}
      ;                   
  
 CMD : SAIDA
-    | CMD_IF    {$$.c = $1.c;}
+    | CMD_IF    {$$.c = $1.c;  }
     | CMD_FOR   {$$.c = $1.c;}
     | CMD_WHILE {$$.c = $1.c;} 
     | BLOCO     {$$.c = $1.c;}
@@ -121,7 +129,7 @@ BLOCO : _BEGIN CMDS _END
       ;    
     
 CMD_IF : _IF E _THEN CMD
-            { $$.c = $1.v  + "( " + $2.v + " )" + "\n" + "  " + $4.c + "\n"; cout << "->>" << $1.v << endl; }
+            { $$.c = $1.v  + "( " + $2.v + " )" + "\n" + "  " + $4.c + "\n"; }
        | _IF E _THEN  CMD _ELSE CMD
             { $$.c = $1.v + " " + $2.v + "\n" + "  " + $4.c + "\n" + 
               $5.v + " " + $6.c; }
@@ -175,6 +183,8 @@ int main( int argc, char* argv[] )
   m[":)"] = "{";
   m[":("] = "}";
   m["<-"] = "=";
+  m["SemCasaDecimal"] = "int";
+  m["CharPointerMelhorado"] = "char";
   yyparse();
 }
 
