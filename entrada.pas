@@ -1,20 +1,19 @@
-Algoritmo HelloWorld;
+Alg Main;
 
-PARA_NAO_ESCREVER_TUDO_DE_NOVO max(a,b: SemCasaDecimal) : SemCasaDecimal;
+Function AA  : SemCasaDecimal;
 :)
-  
+a <- 4;
+
 :(;
-  Var
-    a,b: SemCasaDecimal;
-
+Legenda
+    K : CharPointerMelhorado;
+    N : SemCasaDecimal;
 :)
-  SERA_QUE a > b ?
-    :)
-      a <- 4;
-      b <- a + 2;
+    BebaEnquanto(a < 5)
+    :)    
+        if a>b then
+        :)
+            write( ' 1 ' );
+        :(;
     :(;
-  
-  WriteLn( 'hello, world' );
-  Writeln( 3 );
 :(.
-
