@@ -53,7 +53,7 @@ CTE_INTEGER                     {DIGITO}+
 {CTE_INTEGER} 	{ trata_folha(); return _CTE_INTEGER; }
 
 ":)"            { trata_folha(); return _BEGIN;}
-":("             { trata_folha(); return _END;}
+":("            { trata_folha(); return _END;}
 "<-"		{ trata_folha(); return _ATRIB; }
 "&&"            { trata_folha(); return _ATRIB; } // nao eh atributo eh condicao
 "||"            { trata_folha(); return _ATRIB; } // nao eh atributo eh condicao
@@ -63,8 +63,6 @@ CTE_INTEGER                     {DIGITO}+
 "/"		{ trata_folha(); return _ATRIB; }
 "*"		{ trata_folha(); return _ATRIB; }
 "^"		{ trata_folha(); return _ATRIB; }
-"("		{ trata_folha(); return _ATRIB; }
-")"		{ trata_folha(); return _ATRIB; }
 
 {ID}  { trata_folha(); return _ID; }
 
