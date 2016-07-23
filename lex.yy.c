@@ -812,7 +812,7 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 33 "trabalho.lex"
-{}
+{ yyrowno += 1;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -1947,8 +1947,10 @@ void yyfree (void * ptr )
 
 void trata_folha(){
     yylval.v = yytext;
-    yylval.t = "";
+    yylval.t.nome = "";
+    yylval.t.fmt = "";
     yylval.c = "";
+    yylval.lst.clear();
     yyrowno += strlen( yytext );
 }
 void trata_aspas_simples(){

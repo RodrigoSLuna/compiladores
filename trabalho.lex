@@ -29,40 +29,35 @@ CTE_STRING	                "'"([^'\n]|"''")*"'"
 CTE_INTEGER                     {DIGITO}+
 
 %%
-"\n"            {yylineno++; yyrowno = 1;}
-{WS} {}
+"\n" {yylineno++; yyrowno = 1;}
+{WS} { yyrowno += 1;}
 
-{Alg} 	         { trata_folha(); return _PROGRAM; }
+{Alg} 	                { trata_folha(); return _PROGRAM; }
 
-{END} 		{ trata_folha(); return _END; }
-{WRITELN} 	{ trata_folha(); return _WRITELN; }
-{WRITE} 	{ trata_folha(); return _WRITE; }
+{END} 		        { trata_folha(); return _END; }
+{WRITELN} 	        { trata_folha(); return _WRITELN; }
+{WRITE} 	        { trata_folha(); return _WRITE; }
 {CharPointerMelhorado} 	{ trata_folha(); return _STRING; }
 {SemCasaDecimal} 	{ trata_folha(); return _INTEGER; }
 {Legenda} 		{ trata_folha(); return _VAR; }
-{IF} 		{ trata_folha(); return _IF; }
-{THEN} 		{ trata_folha(); return _THEN; }
-{ELSE} 		{ trata_folha(); return _ELSE; }
-{FOR} 		{ trata_folha(); return _FOR; }
-{BebaEnquanto} 	{ trata_folha(); return _WHILE; }
-{TO} 		{ trata_folha(); return _TO; }
-{DO} 		{ trata_folha(); return _DO; }
-{FUNCTION}      { trata_folha(); return _FUNCTION; }
+{IF} 		        { trata_folha(); return _IF; }
+{THEN} 		        { trata_folha(); return _THEN; }
+{ELSE} 		        { trata_folha(); return _ELSE; }
+{FOR} 		        { trata_folha(); return _FOR; }
+{BebaEnquanto} 	        { trata_folha(); return _WHILE; }
+{TO} 		        { trata_folha(); return _TO; }
+{DO} 		        { trata_folha(); return _DO; }
+{FUNCTION}              { trata_folha(); return _FUNCTION; }
 
 {CTE_STRING} 	{ trata_aspas_simples(); return _CTE_STRING; }
 {CTE_INTEGER} 	{ trata_folha(); return _CTE_INTEGER; }
 
 ":)"            { trata_folha(); return _BEGIN;}
-":("            { trata_folha(); return _END;}
+":("             { trata_folha(); return _END;}
 "<-"		{ trata_folha(); return _ATRIB; }
 "&&"            { trata_folha(); return _ATRIB; } // nao eh atributo eh condicao
 "||"            { trata_folha(); return _ATRIB; } // nao eh atributo eh condicao
 "%"             { trata_folha(); return _ATRIB; }
-"+"		{ trata_folha(); return _ATRIB; }
-"-"		{ trata_folha(); return _ATRIB; }
-"/"		{ trata_folha(); return _ATRIB; }
-"*"		{ trata_folha(); return _ATRIB; }
-"^"		{ trata_folha(); return _ATRIB; }
 
 {ID}  { trata_folha(); return _ID; }
 
@@ -72,8 +67,10 @@ CTE_INTEGER                     {DIGITO}+
 
 void trata_folha(){
     yylval.v = yytext;
-    yylval.t = "";
+    yylval.t.nome = "";
+    yylval.t.fmt = "";
     yylval.c = "";
+    yylval.lst.clear();
     yyrowno += strlen( yytext );
 }
 void trata_aspas_simples(){
