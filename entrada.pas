@@ -10,10 +10,10 @@ Amigos
     b : CopoInteiro;  
     c : CopoInteiro;
 :)
-    
-        READ(b);
-        Sera b equals 0 Que
-            ColocaNaConta( ' b ' )
-        else
-            ColocaNaConta( ' b + 1' );
+
+
+for (b  ; b < 2 ; b <- 1+2)
+        :)
+            ColocaNaConta(b);
+        :(;    
 :(.

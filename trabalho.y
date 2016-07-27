@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-
+#include <sstream>
 using namespace std;
 
 
@@ -25,7 +25,7 @@ struct Tipo {
 Tipo Integer = { "integer", "int", "d" };
 Tipo Real =    { "real", "float", "f" };
 Tipo Double =  { "double", "double", "lf" };
-Tipo Boolean = { "boolean", "int", "d" };
+Tipo Bool = { "bool", "int", "d" };
 Tipo String =  { "string", "char", "s" };
 Tipo Char =    { "char", "char", "c" };
 
@@ -190,7 +190,7 @@ string declara_var_temp( map< string, int >& temp ) {
     declara_nvar_temp( Double, temp[Double.nome] ) +
     declara_nvar_temp( String, temp[String.nome] ) +
     declara_nvar_temp( Char, temp[Char.nome] ) +
-    declara_nvar_temp( Boolean, temp[Boolean.nome] ) +
+    declara_nvar_temp( Bool, temp[Bool.nome] ) +
     "\n";
   
   temp.clear();
@@ -205,7 +205,7 @@ void gera_cmd_if( Atributo& ss,
   string lbl_then = gera_nome_label( "then" );
   string lbl_end_if = gera_nome_label( "end_if" );
   
-  if( exp.t.nome != Boolean.nome )
+  if( exp.t.nome != Bool.nome )
     erro( "A expressão do IF deve ser booleana!" );
     
   ss.c = exp.c + 
@@ -215,6 +215,24 @@ void gera_cmd_if( Atributo& ss,
          cmd_then.c + "\n" +
          lbl_end_if + ":;\n"; 
 }
+void gera_cmd_while( Atributo& ss, 
+                     const Atributo& exp,
+                     const Atributo& cmd ) {
+        
+     gera_cmd_if( ss, exp, cmd, ""  );
+     ss.c = "while(true)\n" + ss.c +"break;\n" ;
+}
+void gera_cmd_for( Atributo&ss,
+                   const Atributo& atrib,
+                   const Atributo& exp,
+                    Atributo& cmd1,
+                    Atributo& cmd2){
+  cout << cmd1.c << endl;
+  cmd1.c =   cmd2.c + cmd1.c;
+  gera_cmd_if( ss, exp ,cmd1 , "" );
+    ss.c = atrib.c + "\nfor( true ; true ; true  ){\n" + ss.c +"break;\n" + "\t}\n"; 
+}
+/*  
 // apenas um if, sem o else
 void gera_cmd_if( Atributo& ss, 
                   const Atributo& exp, 
@@ -229,7 +247,7 @@ void gera_cmd_if( Atributo& ss,
          "\nif( " + exp.v + " ) goto " + lbl_then + ";\n" +
          lbl_end_if + ":;\n"; 
 }
-
+*/
 void gera_codigo_funcao( Atributo& ss, 
                          const Atributo& retorno, 
                          string nome, 
@@ -321,7 +339,7 @@ DECL : IDS ':' TIPO { declara_variavel( $$, $1.lst, $3.t); }
 TIPO : _INTEGER { $$.t = Integer;}
      | _REAL { $$.t = Real; }
      | _DOUBLE { $$.t = Double; }
-     | _BOOLEAN { $$.t = Boolean;}
+     | _BOOLEAN { $$.t = Bool;}
      | _STRING TAM_STRING { $$.t = $2.t ; }
      ;
      
@@ -368,9 +386,10 @@ EXPS : E ',' EXPS
      | E
      ;
      
-CMD_WHILE : _WHILE '(' E ')' CMD
+CMD_WHILE : _WHILE '(' E ')' CMD { gera_cmd_while( $$, $3, $5  );  }
           ;
-CMD_FOR : _FOR _ID _ATRIB E _TO E _DO CMD
+/*Atualizar gramatica FOR */
+CMD_FOR : _FOR '(' E ';' E ';' CMD_ATRIB ')' CMD { gera_cmd_for( $$, $3, $5, $7, $9 );  }
         ;
     
 BLOCO : _BEGIN CMDS _END { $$ = $2; }
@@ -461,16 +480,16 @@ void inicializa_tabela_de_resultado_de_operacoes() {
   tro[ "+" ] = r; 
   
   r.clear();
-  r[par(Integer, Integer)] = Boolean; 
-  r[par(Real, Real)] = Boolean;    
-  r[par(Real, Double)] = Boolean;    
-  r[par(Double, Real)] = Boolean;    
-  r[par(Double, Double)] = Boolean;    
-  r[par(Char, Char)] = Boolean;      
-  r[par(String, Char)] = Boolean;      
-  r[par(Char, String)] = Boolean;    
-  r[par(String, String)] = Boolean;    
-  r[par(Boolean, Boolean)] = Boolean;    
+  r[par(Integer, Integer)] = Bool; 
+  r[par(Real, Real)] = Bool;    
+  r[par(Real, Double)] = Bool;    
+  r[par(Double, Real)] = Bool;    
+  r[par(Double, Double)] = Bool;    
+  r[par(Char, Char)] = Bool;      
+  r[par(String, Char)] = Bool;      
+  r[par(Char, String)] = Bool;    
+  r[par(String, String)] = Bool;    
+  r[par(Bool, Bool)] = Bool;    
   tro["=="] = r;
   tro["!="] = r;
   tro[">="] = r;
