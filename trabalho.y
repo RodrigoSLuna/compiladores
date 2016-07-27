@@ -20,12 +20,7 @@ struct Tipo {
   string fmt;   // O formato para "printf"
   vector< Range > dim; // Dimensões (se não for array, fica vazio)
 };
-
-struct Atributo {
-  string v, c;
-  Tipo t;
-  vector<string> lst;
-}; 
+ 
 
 Tipo Integer = { "integer", "int", "d" };
 Tipo Real =    { "real", "float", "f" };
@@ -33,6 +28,12 @@ Tipo Double =  { "double", "double", "lf" };
 Tipo Boolean = { "boolean", "int", "d" };
 Tipo String =  { "string", "char", "s" };
 Tipo Char =    { "char", "char", "c" };
+
+struct Atributo {
+  string v, c;
+  Tipo t;
+  vector<string> lst;
+};
 
 #define YYSTYPE Atributo
 
@@ -201,7 +202,7 @@ void gera_cmd_if( Atributo& ss,
 
 %token _ID _PROGRAM _BEGIN _END _WRITELN _WRITE _VAR _IF _THEN _ELSE
 %token _FOR _TO _DO _ATRIB _FUNCTION _WHILE _MOD
-%token _INTEGER _STRING _REAL _BOOLEAN
+%token _INTEGER _STRING _REAL _BOOLEAN _DOUBLE
 
 %token _CTE_STRING _CTE_INTEGER
 
@@ -209,6 +210,7 @@ void gera_cmd_if( Atributo& ss,
 %left '+' '-'
 %left '*' '/' _MOD
 %right '^' '&' '|'
+
 %start S
 
 %%
@@ -258,6 +260,7 @@ DECL : IDS ':' TIPO
      
 TIPO : _INTEGER { $$.t = Integer;}
      | _REAL { $$.t = Real; }
+     | _DOUBLE { $$.t = Double; }
      | _BOOLEAN { $$.t = Boolean;}
      | _STRING TAM_STRING { $$.t = $2.t ; }
      ;
@@ -296,9 +299,9 @@ CMD_ATRIB : LVALUE INDICE _ATRIB E
 LVALUE: _ID { busca_tipo_da_variavel( $$, $1 ); }
         ;
           
-INDICE : '[' EXPS ']' INDICE
-       |
-       ;         
+INDICE : '[' EXPS ']' '[' EXPS ']'
+       | '[' EXPS ']'
+       ;          
        
 EXPS : E ',' EXPS
      | E
@@ -314,7 +317,7 @@ BLOCO : _BEGIN CMDS _END
       ;    
     
 CMD_IF : _IF E _THEN CMD
-       | _IF E _THEN  CMD _ELSE CMD
+       | _IF E _THEN  CMD  _ELSE CMD
         { gera_cmd_if ($$ , $2, $4, $6); }
        ;    
     
@@ -338,7 +341,7 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
 F : _CTE_STRING { $$ = $1; $$.t = String; }
   | _CTE_INTEGER { $$ = $1; $$.t = Integer; }
   | _ID         { busca_tipo_da_variavel( $$, $1 ); }
-  | '(' E ')' {$$ = $2;}
+  | '(' E ')'   {$$ = $2;}
   ;     
  
 %%

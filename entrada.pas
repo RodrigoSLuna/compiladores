@@ -1,10 +1,9 @@
-Alg Main;
+HappyHour Main;
 
-Legenda
-    b : SemCasaDecimal;  
-    c : SemCasaDecimal;
+Amigos
+    b : HalfHalf;  
+    c : HalfHalf;
 :)
-        WriteLn('Hello World');
-        b <- 1;
-        c <- 4;
+        ColocaNaConta('Hello World');
+        b := 1 + 2;
 :(.
