@@ -63,7 +63,10 @@ CTE_INTEGER                     {DIGITO}+
 
 ":)"                    { trata_folha(); return _BEGIN;}
 ":("                    { trata_folha(); return _END;}
-"<-"		        { trata_folha(); return _ATRIB; }
+
+"<-"			{ trata_folha(); return _ATRIB; }
+"equals" 	        { trata_folha(); yylval.v = "=="; return '='; }
+
 "&&"                    { trata_folha(); return _ATRIB; } // nao eh atributo eh condicao
 "||"                    { trata_folha(); return _ATRIB; } // nao eh atributo eh condicao
 "%"                     { trata_folha(); return _MOD; }
@@ -74,17 +77,20 @@ CTE_INTEGER                     {DIGITO}+
 
 %%
 
-void trata_folha(){
-    yylval.v = yytext;
-    yylval.t.nome = "";
-    yylval.t.fmt = "";
-    yylval.c = "";
-    yylval.lst.clear();
-    yyrowno += strlen( yytext );
+void trata_folha() {
+  yylval.v = yytext;
+  yylval.t.nome = "";
+  yylval.t.decl = "";
+  yylval.t.fmt = "";
+  yylval.c = "";
+  yylval.lst.clear();
+  
+  yyrowno += strlen( yytext ); 
 }
-void trata_aspas_simples(){
-    trata_folha();
-    yylval.v = "\"" + yylval.v.substr( 1, yylval.v.length()-2 ) + "\"";
+
+void trata_aspas_simples() {
+  trata_folha(); 
+  yylval.v = "\"" + yylval.v.substr( 1, yylval.v.length()-2 ) + "\""; 
 }
 
 char* strupr( char* st ) {
@@ -96,5 +102,4 @@ char* strupr( char* st ) {
   }
   return aux;
 }
-
 

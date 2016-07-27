@@ -120,12 +120,13 @@ void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
   }
 }
 
+// Precisa ajeitar, para double -> integer, float -> integer
 void gera_codigo_atribuicao( Atributo& ss, 
                              const Atributo& s1, 
                              const Atributo& s3 ) {
   if( s1.t.nome == s3.t.nome )
-      {
-    ss.c = s1.c + s3.c + "  " + s1.v + " = " + s3.v + ";\n";
+  { 
+        ss.c = s1.c + s3.c + "  " + s1.v + " = " + s3.v + ";\n";
   }
   else if( s1.t.nome == s3.t.nome &&  s1.t.nome == "string" ) {
     ss.c = s1.c + s3.c + "  " 
@@ -198,6 +199,20 @@ void gera_cmd_if( Atributo& ss,
          lbl_end_if + ":;\n"; 
 }
 
+void gera_cmd_if( Atributo& ss, 
+                  const Atributo& exp, 
+                  const Atributo& cmd_then) { 
+  string lbl_then = gera_nome_label( "then" );
+  string lbl_end_if = gera_nome_label( "end_if" );
+  
+  if( exp.t.nome != Boolean.nome )
+    erro( "A expressão do IF deve ser booleana!" );
+    
+  ss.c = exp.c + 
+         "\nif( " + exp.v + " ) goto " + lbl_then + ";\n" +
+         lbl_end_if + ":;\n"; 
+}
+
 %}
 
 %token _ID _PROGRAM _BEGIN _END _WRITELN _WRITE _VAR _IF _THEN _ELSE
@@ -245,17 +260,14 @@ PARAMETROS : DECL ';' PARAMETROS
            | DECL
            ;         
    
-VARS : _VAR DECLS
-     {$$.c = $2.c;}
+VARS : _VAR DECLS {$$.c = $2.c;}
      ;
      
-DECLS : DECL ';' DECLS
-      { $$.c =  $1.c + $3.c;}
+DECLS : DECL ';' DECLS { $$.c =  $1.c + $3.c;}
       | DECL ';'
       ;   
      
-DECL : IDS ':' TIPO
-     { declara_variavel( $$, $1, $3); }
+DECL : IDS ':' TIPO { declara_variavel( $$, $1, $3); }
      ;
      
 TIPO : _INTEGER { $$.t = Integer;}
@@ -269,15 +281,15 @@ TAM_STRING : '[' _CTE_INTEGER ']'
            { $$.t = String; $$.t.dim[0].fim = toInt( $2.v ); }
            | { $$.t = String; }
            ;     
-IDS : _ID ',' IDS { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
-    | _ID   { $$.lst.push_back( $1.v ); }
-    ;      
+IDS : IDS ',' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
+    | _ID         { $$.lst.push_back( $1.v ); }
+    ;     
    
 PRINCIPAL : _BEGIN CMDS _END '.'
             { $$.c = "int main() {\n" + $2.c + "}\n";}
           ;
           
-CMDS : CMD ';' CMDS { $$.c = $1.c + $3.c;}
+CMDS : CMD ';' CMDS { $$.c = $1.c + $3.c;  }
      | {$$.c = "";}
      ;                   
  
@@ -290,9 +302,9 @@ CMD : SAIDA
     ;
     
     
-CMD_ATRIB : LVALUE INDICE _ATRIB E
+CMD_ATRIB : LVALUE INDICE _ATRIB E { cout << "Here1 " << endl;}
           | LVALUE _ATRIB E
-            { gera_codigo_atribuicao( $$, $1, $3 ); }
+            { gera_codigo_atribuicao( $$, $1, $3 );  cout << "HERE2 " <<endl;}
           ;
             
 
@@ -312,12 +324,12 @@ CMD_WHILE : _WHILE '(' E ')' CMD
 CMD_FOR : _FOR _ID _ATRIB E _TO E _DO CMD
         ;
     
-BLOCO : _BEGIN CMDS _END
-        { $$ = $2; }
+BLOCO : _BEGIN CMDS _END { $$ = $2; }
       ;    
     
 CMD_IF : _IF E _THEN CMD
-       | _IF E _THEN  CMD  _ELSE CMD
+        { gera_cmd_if($$, $2, $4); }
+       | _IF E _THEN  CMD _ELSE CMD
         { gera_cmd_if ($$ , $2, $4, $6); }
        ;    
     

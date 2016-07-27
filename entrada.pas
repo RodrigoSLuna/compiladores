@@ -1,9 +1,11 @@
 HappyHour Main;
 
 Amigos
-    b : HalfHalf;  
-    c : HalfHalf;
+    b : CopoInteiro;  
+    c : CopoInteiro;
 :)
-        ColocaNaConta('Hello World');
-        b := 1 + 2;
+        Sera b equals 0 Que
+            ColocaNaConta( ' b ' )
+        else
+            ColocaNaConta( ' b + 1' );
 :(.
