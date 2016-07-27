@@ -357,7 +357,7 @@ void gera_cmd_for( Atributo&ss,
                     Atributo& cmd1,
                     Atributo& cmd2){
   cout << cmd1.c << endl;
-  cmd1.c =   cmd2.c + cmd1.c;
+  cmd1.c =   cmd2.c + cmd1.c + "continue;\n";
   gera_cmd_if( ss, exp ,cmd1 , "" );
     ss.c = atrib.c + "\nfor( true ; true ; true  ){\n" + ss.c +"break;\n" + "\t}\n"; 
 }

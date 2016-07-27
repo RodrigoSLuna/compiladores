@@ -11,8 +11,8 @@ Amigos
     c : CopoInteiro;
 :)
 
-
-MaisUma (b  Para b < 2 Beber b <- 1+2)
+    b <- 2;
+MaisUma (b  Para b < 10 Beber b <- b + 2)
         :)
             ColocaNaConta(b);
         :(;    
