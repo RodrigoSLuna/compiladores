@@ -16,6 +16,8 @@ BEGIN                           [Bb][Ee][Gg][Ii][Nn]
 END			        [Ee][Nn][Dd]
 ColocaEFechaAConta	        ColocaEFechaAConta
 ColocaNaConta		        ColocaNaConta
+READLN		                [Rr][Ee][Aa][Dd][Ll][Nn]
+READ		                [Rr][Ee][Aa][Dd]
 HalfHalf                        HalfHalf
 MeiaGarrafa                     MeiaGarrafa
 CopoInteiro	                CopoInteiro
@@ -43,6 +45,8 @@ CTE_INTEGER                     {DIGITO}+
 {END} 		        { trata_folha(); return _END; }
 {ColocaEFechaAConta} 	{ trata_folha(); return _WRITELN; }
 {ColocaNaConta} 	{ trata_folha(); return _WRITE; } 
+{READLN} 	        { trata_folha(); return _READLN; }
+{READ} 		        { trata_folha(); return _READ; }
 {VoceBebeu}             { trata_folha(); return _BOOLEAN; }
 {HalfHalf}              { trata_folha(); return _DOUBLE; }
 {MeiaGarrafa}           { trata_folha(); return _REAL; }

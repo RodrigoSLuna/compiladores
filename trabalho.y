@@ -43,7 +43,9 @@ void yyerror(const char *);
 void erro( string );
 
 
-map<string,Tipo> ts;
+vector < map<string,Tipo> > ts;
+map<string,Tipo> tf;
+
 map< string, map< string, Tipo > > tro; // tipo_resultado_operacao;
 
 // contadores para variáveis temporariras
@@ -66,6 +68,14 @@ int toInt( string valor ) {
   sscanf( valor.c_str(), "%d", &aux );
   
   return aux;
+}
+
+void empilha_nova_tabela_de_simbolos() {
+  ts.push_back( map< string, Tipo >() );
+}
+
+void desempilha_tabela_de_simbolos() {
+  ts.pop_back();
 }
 
 string gera_nome_var( Tipo t ) {
@@ -98,24 +108,31 @@ string trata_dimensoes_decl_var( Tipo t ) {
 
 // 'Atributo&': o '&' significa passar por referência (modifica).
 void declara_variavel( Atributo& ss, 
-                       const Atributo& s1, const Atributo& s3 ) {
+                       vector<string> lst, 
+                       Tipo tipo ) {
   ss.c = "";
-  for( int i = 0; i < s1.lst.size(); i++ ) {
-    if( ts.find( s1.lst[i] ) != ts.end() ) 
-      erro( "Variável já declarada: " + s1.lst[i] );
+  for( int i = 0; i < lst.size(); i++ ) {
+    if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
+      erro( "Variável já declarada: " + lst[i] );
     else {
-      ts[ s1.lst[i] ] = s3.t; 
-      ss.c += s3.t.decl + " " + s1.lst[i] 
-              + trata_dimensoes_decl_var( s3.t ) + ";\n"; 
+      ts[ts.size()-1][ lst[i] ] = tipo; 
+      ss.c += tipo.decl + " " + lst[i] 
+              + trata_dimensoes_decl_var( tipo ) + ";\n"; 
     }  
   }
 }
 
+void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
+  vector<string> lst;
+  lst.push_back( nome );
+  declara_variavel( ss, lst, tipo );
+}
+
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
-  if( ts.find( s1.v ) == ts.end() )
+  if( ts[ts.size()-1].find( s1.v ) == ts[ts.size()-1].end() )
         erro( "Variável não declarada: " + s1.v );
   else {
-    ss.t = ts[ s1.v ];
+    ss.t = ts[ts.size()-1][ s1.v ];
     ss.v = s1.v;
   }
 }
@@ -184,7 +201,7 @@ string declara_var_temp( map< string, int >& temp ) {
 void gera_cmd_if( Atributo& ss, 
                   const Atributo& exp, 
                   const Atributo& cmd_then, 
-                  const Atributo& cmd_else ) { 
+                  string cmd_else ) { 
   string lbl_then = gera_nome_label( "then" );
   string lbl_end_if = gera_nome_label( "end_if" );
   
@@ -193,12 +210,12 @@ void gera_cmd_if( Atributo& ss,
     
   ss.c = exp.c + 
          "\nif( " + exp.v + " ) goto " + lbl_then + ";\n" +
-         cmd_else.c + "  goto " + lbl_end_if + ";\n\n" +
+         cmd_else + "  goto " + lbl_end_if + ";\n\n" +
          lbl_then + ":;\n" + 
          cmd_then.c + "\n" +
          lbl_end_if + ":;\n"; 
 }
-
+// apenas um if, sem o else
 void gera_cmd_if( Atributo& ss, 
                   const Atributo& exp, 
                   const Atributo& cmd_then) { 
@@ -213,9 +230,23 @@ void gera_cmd_if( Atributo& ss,
          lbl_end_if + ":;\n"; 
 }
 
+void gera_codigo_funcao( Atributo& ss, 
+                         const Atributo& retorno, 
+                         string nome, 
+                         string params,
+                         string bloco ) {
+  ss.c = retorno.t.nome + " " + nome + "( " + params + " )" + 
+         "{\n" +
+         retorno.c +
+         declara_var_temp( temp_local ) + 
+         bloco +
+         "return Result;\n}\n";
+}             
+
 %}
 
 %token _ID _PROGRAM _BEGIN _END _WRITELN _WRITE _VAR _IF _THEN _ELSE
+%token _READ _READLN
 %token _FOR _TO _DO _ATRIB _FUNCTION _WHILE _MOD
 %token _INTEGER _STRING _REAL _BOOLEAN _DOUBLE
 
@@ -252,9 +283,26 @@ MIOLO : VARS
       | FUNCTION
       ;          
    
-FUNCTION : _FUNCTION _ID '(' PARAMETROS ')' ':' TIPO ';' BLOCO ';'
-         | _FUNCTION _ID ':' TIPO ';' BLOCO ';'
-         ;    
+FUNCTION : _FUNCTION _ID { escopo_local = true; 
+                           empilha_nova_tabela_de_simbolos(); } 
+           '(' PARAMETROS ')' ':' TIPO ';' 
+           { declara_variavel( $8, "Result", $8.t );
+             tf[$2.v] = $8.t; } 
+           BLOCO ';' 
+           { gera_codigo_funcao( $$, $8, $2.v, $5.c, $11.c ); 
+             escopo_local = false;
+             desempilha_tabela_de_simbolos(); }
+             
+         | _FUNCTION _ID { escopo_local = true; 
+                           empilha_nova_tabela_de_simbolos(); }   
+           ':' TIPO ';'
+           { declara_variavel( $5, "Result", $5.t ); 
+             tf[$2.v] = $5.t; } 
+           BLOCO ';'
+           { gera_codigo_funcao( $$, $5, $2.v, "", $8.c ); 
+             escopo_local = false;
+             desempilha_tabela_de_simbolos(); }
+         ;        
          
 PARAMETROS : DECL ';' PARAMETROS
            | DECL
@@ -267,7 +315,7 @@ DECLS : DECL ';' DECLS { $$.c =  $1.c + $3.c;}
       | DECL ';'
       ;   
      
-DECL : IDS ':' TIPO { declara_variavel( $$, $1, $3); }
+DECL : IDS ':' TIPO { declara_variavel( $$, $1.lst, $3.t); }
      ;
      
 TIPO : _INTEGER { $$.t = Integer;}
@@ -294,6 +342,7 @@ CMDS : CMD ';' CMDS { $$.c = $1.c + $3.c;  }
      ;                   
  
 CMD : SAIDA
+    | ENTRADA
     | CMD_IF  
     | CMD_FOR   
     | CMD_WHILE 
@@ -302,9 +351,9 @@ CMD : SAIDA
     ;
     
     
-CMD_ATRIB : LVALUE INDICE _ATRIB E { cout << "Here1 " << endl;}
+CMD_ATRIB : LVALUE INDICE _ATRIB E 
           | LVALUE _ATRIB E
-            { gera_codigo_atribuicao( $$, $1, $3 );  cout << "HERE2 " <<endl;}
+            { gera_codigo_atribuicao( $$, $1, $3 ); }
           ;
             
 
@@ -328,9 +377,9 @@ BLOCO : _BEGIN CMDS _END { $$ = $2; }
       ;    
     
 CMD_IF : _IF E _THEN CMD
-        { gera_cmd_if($$, $2, $4); }
+       { gera_cmd_if( $$, $2, $4, ""); }
        | _IF E _THEN  CMD _ELSE CMD
-        { gera_cmd_if ($$ , $2, $4, $6); }
+        { gera_cmd_if ($$ , $2, $4, $6.c); }
        ;    
     
 SAIDA : _WRITE '(' E ')'
@@ -338,7 +387,13 @@ SAIDA : _WRITE '(' E ')'
       | _WRITELN '(' E ')' 
         { $$.c = "  printf( \"%"+ $3.t.fmt + "\\n\", " + $3.v + " );\n";}
       ;
-   
+      
+ENTRADA : _READLN '(' LVALUE ')'  
+          { $$.c = "  scanf( \"%"+ $3.t.fmt + "\", &"+ $3.v + " );\n"; }
+        | _READ '(' LVALUE ')'  
+          { $$.c = "  scanf( \"%"+ $3.t.fmt + "\", &"+ $3.v + " );\n"; }
+        ;      
+      
 E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '-' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '*' E { gera_codigo_operador( $$, $1, $2, $3 ); }
@@ -354,6 +409,10 @@ F : _CTE_STRING { $$ = $1; $$.t = String; }
   | _CTE_INTEGER { $$ = $1; $$.t = Integer; }
   | _ID         { busca_tipo_da_variavel( $$, $1 ); }
   | '(' E ')'   {$$ = $2;}
+  | _ID '(' E ')' { $$.v = gera_nome_var( tf[$1.v] );
+                    $$.c = $3.c +
+                    " " + $$.v + " = " + $1.v + "( " + $3.v + " );\n";
+                    $$.t = tf[ $1.v ] ; }
   ;     
  
 %%
@@ -430,6 +489,8 @@ int main( int argc, char* argv[] )
 {
   inicializa_tipos();
   inicializa_tabela_de_resultado_de_operacoes();
+  empilha_nova_tabela_de_simbolos(); 
+  
   yyparse();
 }
 
