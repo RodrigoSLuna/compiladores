@@ -27,9 +27,9 @@ Amigos			        Amigos
 Sera			        Sera
 Que		                Que
 ELSE		                [Ee][Ll][Ss][Ee]
-FOR			        [Ff][Oo][Rr]
-TO			        [Tt][Oo]
-DO			        [Dd][Oo]
+MaisUma			        MaisUma
+Para			        Para
+Beber			        Beber
 Rodada	                        Rodada
 BebaEnquanto                    BebaEnquanto
 CTE_STRING	                "'"([^'\n]|"''")*"'"
@@ -56,10 +56,10 @@ CTE_INTEGER                     {DIGITO}+
 {Sera} 		        { trata_folha(); return _IF; }
 {Que} 		        { trata_folha(); return _THEN; }
 {ELSE} 		        { trata_folha(); return _ELSE; }
-{FOR} 		        { trata_folha(); return _FOR; }
+{MaisUma} 		{ trata_folha(); return _FOR; }
 {BebaEnquanto} 	        { trata_folha(); return _WHILE; }
-{TO} 		        { trata_folha(); return _TO; }
-{DO} 		        { trata_folha(); return _DO; }
+{Para} 		        { trata_folha(); return _TO; }
+{Beber} 		{ trata_folha(); return _DO; }
 {Rodada}                { trata_folha(); return _FUNCTION; }
 
 {CTE_STRING} 	        { trata_aspas_simples(); return _CTE_STRING; }

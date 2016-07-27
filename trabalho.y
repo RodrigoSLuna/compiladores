@@ -389,7 +389,7 @@ EXPS : E ',' EXPS
 CMD_WHILE : _WHILE '(' E ')' CMD { gera_cmd_while( $$, $3, $5  );  }
           ;
 /*Atualizar gramatica FOR */
-CMD_FOR : _FOR '(' E ';' E ';' CMD_ATRIB ')' CMD { gera_cmd_for( $$, $3, $5, $7, $9 );  }
+CMD_FOR : _FOR '(' E _TO E _DO CMD_ATRIB ')' CMD { gera_cmd_for( $$, $3, $5, $7, $9 );  }
         ;
     
 BLOCO : _BEGIN CMDS _END { $$ = $2; }

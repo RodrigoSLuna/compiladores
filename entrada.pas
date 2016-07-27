@@ -12,7 +12,7 @@ Amigos
 :)
 
 
-for (b  ; b < 2 ; b <- 1+2)
+MaisUma (b  Para b < 2 Beber b <- 1+2)
         :)
             ColocaNaConta(b);
         :(;    
