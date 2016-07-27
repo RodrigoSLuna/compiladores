@@ -349,7 +349,7 @@ void gera_cmd_while( Atributo& ss,
                      const Atributo& cmd ) {
         
      gera_cmd_if( ss, exp, cmd, ""  );
-     ss.c = "while(true)\n" + ss.c +"break;\n" ;
+     ss.c = "while(true){\n" + ss.c +"break;\n}" ;
 }
 void gera_cmd_for( Atributo&ss,
                    const Atributo& atrib,
