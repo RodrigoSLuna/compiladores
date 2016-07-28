@@ -7,13 +7,9 @@ Rodada par( a: CopoInteiro ) : VoceBebeu;
     :(;
 
 Amigos
-    b : CopoInteiro;  
+    b : CharPointerMelhorado;
     c : CopoInteiro;
 :)
 
-    b <- 2;
-MaisUma (b  Para b < 10 Beber b <- b + 2)
-        :)
-            ColocaNaConta(b);
-        :(;    
+
 :(.

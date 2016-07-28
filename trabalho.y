@@ -122,11 +122,35 @@ void declara_variavel( Atributo& ss,
   }
 }
 
+void declara_variavel_func( Atributo& ss, 
+                       vector<string> lst, 
+                       Tipo tipo ) {
+  ss.c = "";
+  for( int i = 0; i < lst.size(); i++ ) {
+    if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
+      erro( "Variável já declarada: " + lst[i] );
+    else {
+        
+      ts[ts.size()-1][ lst[i] ] = tipo; 
+      ss.c += tipo.decl + " " + lst[i] 
+              + trata_dimensoes_decl_var( tipo ) + " ,"; 
+    }  
+  }
+}
+
 void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
+  cout << "Nome: "<< nome<< " Fim" << endl;
   vector<string> lst;
   lst.push_back( nome );
   declara_variavel( ss, lst, tipo );
 }
+
+void declara_variavel_func( Atributo& ss, string nome, Tipo tipo ) {
+  vector<string> lst;
+  lst.push_back( nome );
+  declara_variavel_func( ss, lst, tipo );
+}
+
 
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
   if( ts[ts.size()-1].find( s1.v ) == ts[ts.size()-1].end() )
@@ -227,7 +251,6 @@ void gera_cmd_for( Atributo&ss,
                    const Atributo& exp,
                     Atributo& cmd1,
                     Atributo& cmd2){
-  cout << cmd1.c << endl;
   cmd1.c =   cmd2.c + cmd1.c + "continue;\n";
   gera_cmd_if( ss, exp ,cmd1 , "" );
     ss.c = atrib.c + "\nfor( true ; true ; true  ){\n" + ss.c +"break;\n" + "\t}\n"; 
@@ -253,13 +276,24 @@ void gera_codigo_funcao( Atributo& ss,
                          string nome, 
                          string params,
                          string bloco ) {
+
   ss.c = retorno.t.nome + " " + nome + "( " + params + " )" + 
          "{\n" +
          retorno.c +
          declara_var_temp( temp_local ) + 
          bloco +
          "return Result;\n}\n";
-}             
+}         
+
+void conserta(string &nome){
+    cout << nome << endl;
+    string k = ";";
+    for(int i = 0;i<nome.size();i++){
+       if( nome[i] == ';' )
+        nome[i] = ',';
+    }
+    nome[nome.size()-2] = ' ';
+}
 
 %}
 
@@ -307,7 +341,7 @@ FUNCTION : _FUNCTION _ID { escopo_local = true;
            { declara_variavel( $8, "Result", $8.t );
              tf[$2.v] = $8.t; } 
            BLOCO ';' 
-           { gera_codigo_funcao( $$, $8, $2.v, $5.c, $11.c ); 
+           { conserta($5.c) ;gera_codigo_funcao( $$, $8, $2.v, $5.c, $11.c ); 
              escopo_local = false;
              desempilha_tabela_de_simbolos(); }
              
@@ -324,8 +358,9 @@ FUNCTION : _FUNCTION _ID { escopo_local = true;
          
 PARAMETROS : DECL ';' PARAMETROS
            | DECL
-           ;         
-   
+           ;     
+           
+
 VARS : _VAR DECLS {$$.c = $2.c;}
      ;
      
@@ -333,7 +368,7 @@ DECLS : DECL ';' DECLS { $$.c =  $1.c + $3.c;}
       | DECL ';'
       ;   
      
-DECL : IDS ':' TIPO { declara_variavel( $$, $1.lst, $3.t); }
+DECL : IDS ':' TIPO { declara_variavel( $$, $1.lst, $3.t);}
      ;
      
 TIPO : _INTEGER { $$.t = Integer;}

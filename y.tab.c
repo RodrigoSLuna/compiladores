@@ -251,11 +251,35 @@ void declara_variavel( Atributo& ss,
   }
 }
 
+void declara_variavel_func( Atributo& ss, 
+                       vector<string> lst, 
+                       Tipo tipo ) {
+  ss.c = "";
+  for( int i = 0; i < lst.size(); i++ ) {
+    if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
+      erro( "Variável já declarada: " + lst[i] );
+    else {
+        
+      ts[ts.size()-1][ lst[i] ] = tipo; 
+      ss.c += tipo.decl + " " + lst[i] 
+              + trata_dimensoes_decl_var( tipo ) + " ,"; 
+    }  
+  }
+}
+
 void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
+  cout << "Nome: "<< nome<< " Fim" << endl;
   vector<string> lst;
   lst.push_back( nome );
   declara_variavel( ss, lst, tipo );
 }
+
+void declara_variavel_func( Atributo& ss, string nome, Tipo tipo ) {
+  vector<string> lst;
+  lst.push_back( nome );
+  declara_variavel_func( ss, lst, tipo );
+}
+
 
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
   if( ts[ts.size()-1].find( s1.v ) == ts[ts.size()-1].end() )
@@ -356,7 +380,6 @@ void gera_cmd_for( Atributo&ss,
                    const Atributo& exp,
                     Atributo& cmd1,
                     Atributo& cmd2){
-  cout << cmd1.c << endl;
   cmd1.c =   cmd2.c + cmd1.c + "continue;\n";
   gera_cmd_if( ss, exp ,cmd1 , "" );
     ss.c = atrib.c + "\nfor( true ; true ; true  ){\n" + ss.c +"break;\n" + "\t}\n"; 
@@ -382,13 +405,24 @@ void gera_codigo_funcao( Atributo& ss,
                          string nome, 
                          string params,
                          string bloco ) {
+
   ss.c = retorno.t.nome + " " + nome + "( " + params + " )" + 
          "{\n" +
          retorno.c +
          declara_var_temp( temp_local ) + 
          bloco +
          "return Result;\n}\n";
-}             
+}         
+
+void conserta(string &nome){
+    cout << nome << endl;
+    string k = ";";
+    for(int i = 0;i<nome.size();i++){
+       if( nome[i] == ';' )
+        nome[i] = ',';
+    }
+    nome[nome.size()-2] = ' ';
+}
 
 
 
@@ -423,7 +457,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 427 "y.tab.c"
+#line 461 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -737,13 +771,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   282,   282,   287,   294,   297,   300,   301,   304,   307,
-     304,   314,   317,   314,   325,   326,   329,   332,   333,   336,
-     339,   340,   341,   342,   343,   346,   348,   350,   351,   354,
-     358,   359,   362,   363,   364,   365,   366,   367,   368,   372,
-     373,   378,   381,   382,   385,   386,   389,   392,   395,   398,
-     400,   404,   406,   410,   412,   416,   417,   418,   419,   420,
-     421,   422,   423,   424,   427,   428,   429,   430,   431
+       0,   316,   316,   321,   328,   331,   334,   335,   338,   341,
+     338,   348,   351,   348,   359,   360,   364,   367,   368,   371,
+     374,   375,   376,   377,   378,   381,   383,   385,   386,   389,
+     393,   394,   397,   398,   399,   400,   401,   402,   403,   407,
+     408,   413,   416,   417,   420,   421,   424,   427,   430,   433,
+     435,   439,   441,   445,   447,   451,   452,   453,   454,   455,
+     456,   457,   458,   459,   462,   463,   464,   465,   466
 };
 #endif
 
@@ -1756,13 +1790,13 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 283 "trabalho.y"
+#line 317 "trabalho.y"
     { cout << (yyvsp[(1) - (3)]).c << declara_var_temp( temp_global )
            << (yyvsp[(2) - (3)]).c <<  (yyvsp[(3) - (3)]).c << endl;}
     break;
 
   case 3:
-#line 288 "trabalho.y"
+#line 322 "trabalho.y"
     { (yyval).c = "#include <stdlib.h>\n"
                 "#include <string.h>\n" 
                 "#include <stdio.h>\n\n";
@@ -1770,245 +1804,245 @@ yyreduce:
     break;
 
   case 4:
-#line 295 "trabalho.y"
+#line 329 "trabalho.y"
     { (yyval).c = (yyvsp[(1) - (2)]).c + (yyvsp[(2) - (2)]).c ; }
     break;
 
   case 5:
-#line 297 "trabalho.y"
+#line 331 "trabalho.y"
     {(yyval).c = "" ;}
     break;
 
   case 8:
-#line 304 "trabalho.y"
+#line 338 "trabalho.y"
     { escopo_local = true; 
                            empilha_nova_tabela_de_simbolos(); }
     break;
 
   case 9:
-#line 307 "trabalho.y"
+#line 341 "trabalho.y"
     { declara_variavel( (yyvsp[(8) - (9)]), "Result", (yyvsp[(8) - (9)]).t );
              tf[(yyvsp[(2) - (9)]).v] = (yyvsp[(8) - (9)]).t; }
     break;
 
   case 10:
-#line 310 "trabalho.y"
-    { gera_codigo_funcao( (yyval), (yyvsp[(8) - (12)]), (yyvsp[(2) - (12)]).v, (yyvsp[(5) - (12)]).c, (yyvsp[(11) - (12)]).c ); 
+#line 344 "trabalho.y"
+    { conserta((yyvsp[(5) - (12)]).c) ;gera_codigo_funcao( (yyval), (yyvsp[(8) - (12)]), (yyvsp[(2) - (12)]).v, (yyvsp[(5) - (12)]).c, (yyvsp[(11) - (12)]).c ); 
              escopo_local = false;
              desempilha_tabela_de_simbolos(); }
     break;
 
   case 11:
-#line 314 "trabalho.y"
+#line 348 "trabalho.y"
     { escopo_local = true; 
                            empilha_nova_tabela_de_simbolos(); }
     break;
 
   case 12:
-#line 317 "trabalho.y"
+#line 351 "trabalho.y"
     { declara_variavel( (yyvsp[(5) - (6)]), "Result", (yyvsp[(5) - (6)]).t ); 
              tf[(yyvsp[(2) - (6)]).v] = (yyvsp[(5) - (6)]).t; }
     break;
 
   case 13:
-#line 320 "trabalho.y"
+#line 354 "trabalho.y"
     { gera_codigo_funcao( (yyval), (yyvsp[(5) - (9)]), (yyvsp[(2) - (9)]).v, "", (yyvsp[(8) - (9)]).c ); 
              escopo_local = false;
              desempilha_tabela_de_simbolos(); }
     break;
 
   case 16:
-#line 329 "trabalho.y"
+#line 364 "trabalho.y"
     {(yyval).c = (yyvsp[(2) - (2)]).c;}
     break;
 
   case 17:
-#line 332 "trabalho.y"
+#line 367 "trabalho.y"
     { (yyval).c =  (yyvsp[(1) - (3)]).c + (yyvsp[(3) - (3)]).c;}
     break;
 
   case 19:
-#line 336 "trabalho.y"
-    { declara_variavel( (yyval), (yyvsp[(1) - (3)]).lst, (yyvsp[(3) - (3)]).t); }
+#line 371 "trabalho.y"
+    { declara_variavel( (yyval), (yyvsp[(1) - (3)]).lst, (yyvsp[(3) - (3)]).t);}
     break;
 
   case 20:
-#line 339 "trabalho.y"
+#line 374 "trabalho.y"
     { (yyval).t = Integer;}
     break;
 
   case 21:
-#line 340 "trabalho.y"
+#line 375 "trabalho.y"
     { (yyval).t = Real; }
     break;
 
   case 22:
-#line 341 "trabalho.y"
+#line 376 "trabalho.y"
     { (yyval).t = Double; }
     break;
 
   case 23:
-#line 342 "trabalho.y"
+#line 377 "trabalho.y"
     { (yyval).t = Bool;}
     break;
 
   case 24:
-#line 343 "trabalho.y"
+#line 378 "trabalho.y"
     { (yyval).t = (yyvsp[(2) - (2)]).t ; }
     break;
 
   case 25:
-#line 347 "trabalho.y"
+#line 382 "trabalho.y"
     { (yyval).t = String; (yyval).t.dim[0].fim = toInt( (yyvsp[(2) - (3)]).v ); }
     break;
 
   case 26:
-#line 348 "trabalho.y"
+#line 383 "trabalho.y"
     { (yyval).t = String; }
     break;
 
   case 27:
-#line 350 "trabalho.y"
+#line 385 "trabalho.y"
     { (yyval).lst = (yyvsp[(1) - (3)]).lst; (yyval).lst.push_back( (yyvsp[(3) - (3)]).v ); }
     break;
 
   case 28:
-#line 351 "trabalho.y"
+#line 386 "trabalho.y"
     { (yyval).lst.push_back( (yyvsp[(1) - (1)]).v ); }
     break;
 
   case 29:
-#line 355 "trabalho.y"
+#line 390 "trabalho.y"
     { (yyval).c = "int main() {\n" + (yyvsp[(2) - (4)]).c + "}\n";}
     break;
 
   case 30:
-#line 358 "trabalho.y"
+#line 393 "trabalho.y"
     { (yyval).c = (yyvsp[(1) - (3)]).c + (yyvsp[(3) - (3)]).c;  }
     break;
 
   case 31:
-#line 359 "trabalho.y"
+#line 394 "trabalho.y"
     {(yyval).c = "";}
     break;
 
   case 40:
-#line 374 "trabalho.y"
+#line 409 "trabalho.y"
     { gera_codigo_atribuicao( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 41:
-#line 378 "trabalho.y"
+#line 413 "trabalho.y"
     { busca_tipo_da_variavel( (yyval), (yyvsp[(1) - (1)]) ); }
     break;
 
   case 46:
-#line 389 "trabalho.y"
+#line 424 "trabalho.y"
     { gera_cmd_while( (yyval), (yyvsp[(3) - (5)]), (yyvsp[(5) - (5)])  );  }
     break;
 
   case 47:
-#line 392 "trabalho.y"
+#line 427 "trabalho.y"
     { gera_cmd_for( (yyval), (yyvsp[(3) - (9)]), (yyvsp[(5) - (9)]), (yyvsp[(7) - (9)]), (yyvsp[(9) - (9)]) );  }
     break;
 
   case 48:
-#line 395 "trabalho.y"
+#line 430 "trabalho.y"
     { (yyval) = (yyvsp[(2) - (3)]); }
     break;
 
   case 49:
-#line 399 "trabalho.y"
+#line 434 "trabalho.y"
     { gera_cmd_if( (yyval), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]), ""); }
     break;
 
   case 50:
-#line 401 "trabalho.y"
+#line 436 "trabalho.y"
     { gera_cmd_if ((yyval) , (yyvsp[(2) - (6)]), (yyvsp[(4) - (6)]), (yyvsp[(6) - (6)]).c); }
     break;
 
   case 51:
-#line 405 "trabalho.y"
+#line 440 "trabalho.y"
     { (yyval).c = "  printf( \"%"+ (yyvsp[(3) - (4)]).t.fmt + "\", " + (yyvsp[(3) - (4)]).v + " );\n";}
     break;
 
   case 52:
-#line 407 "trabalho.y"
+#line 442 "trabalho.y"
     { (yyval).c = "  printf( \"%"+ (yyvsp[(3) - (4)]).t.fmt + "\\n\", " + (yyvsp[(3) - (4)]).v + " );\n";}
     break;
 
   case 53:
-#line 411 "trabalho.y"
+#line 446 "trabalho.y"
     { (yyval).c = "  scanf( \"%"+ (yyvsp[(3) - (4)]).t.fmt + "\", &"+ (yyvsp[(3) - (4)]).v + " );\n"; }
     break;
 
   case 54:
-#line 413 "trabalho.y"
+#line 448 "trabalho.y"
     { (yyval).c = "  scanf( \"%"+ (yyvsp[(3) - (4)]).t.fmt + "\", &"+ (yyvsp[(3) - (4)]).v + " );\n"; }
     break;
 
   case 55:
-#line 416 "trabalho.y"
+#line 451 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 56:
-#line 417 "trabalho.y"
+#line 452 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 57:
-#line 418 "trabalho.y"
+#line 453 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 58:
-#line 419 "trabalho.y"
+#line 454 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 59:
-#line 420 "trabalho.y"
+#line 455 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 60:
-#line 421 "trabalho.y"
+#line 456 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 61:
-#line 422 "trabalho.y"
+#line 457 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 62:
-#line 423 "trabalho.y"
+#line 458 "trabalho.y"
     { gera_codigo_operador( (yyval), (yyvsp[(1) - (3)]), (yyvsp[(2) - (3)]), (yyvsp[(3) - (3)]) ); }
     break;
 
   case 64:
-#line 427 "trabalho.y"
+#line 462 "trabalho.y"
     { (yyval) = (yyvsp[(1) - (1)]); (yyval).t = String; }
     break;
 
   case 65:
-#line 428 "trabalho.y"
+#line 463 "trabalho.y"
     { (yyval) = (yyvsp[(1) - (1)]); (yyval).t = Integer; }
     break;
 
   case 66:
-#line 429 "trabalho.y"
+#line 464 "trabalho.y"
     { busca_tipo_da_variavel( (yyval), (yyvsp[(1) - (1)]) ); }
     break;
 
   case 67:
-#line 430 "trabalho.y"
+#line 465 "trabalho.y"
     {(yyval) = (yyvsp[(2) - (3)]);}
     break;
 
   case 68:
-#line 431 "trabalho.y"
+#line 466 "trabalho.y"
     { (yyval).v = gera_nome_var( tf[(yyvsp[(1) - (4)]).v] );
                     (yyval).c = (yyvsp[(3) - (4)]).c +
                     " " + (yyval).v + " = " + (yyvsp[(1) - (4)]).v + "( " + (yyvsp[(3) - (4)]).v + " );\n";
@@ -2017,7 +2051,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 2021 "y.tab.c"
+#line 2055 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2231,7 +2265,7 @@ yyreturn:
 }
 
 
-#line 437 "trabalho.y"
+#line 472 "trabalho.y"
 
 
 #include "lex.yy.c"
