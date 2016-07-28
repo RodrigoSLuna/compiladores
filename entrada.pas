@@ -3,9 +3,7 @@ HappyHour Main;
 
 
 Amigos
-  b : CopoInteiro[1000];
-
-  
+  b : CopoInteiro;
+ 
 :)
-
 :(.

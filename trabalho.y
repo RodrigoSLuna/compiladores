@@ -25,7 +25,7 @@ struct Tipo {
 Tipo Integer = { "int", "int", "d" };
 Tipo Real =    { "real", "float", "f" };
 Tipo Double =  { "double", "double", "lf" };
-Tipo Bool = { "bool", "int", "d" };
+Tipo Bool =    { "bool", "int", "d" };
 Tipo String =  { "string", "char", "s" };
 Tipo Char =    { "char", "char", "c" };
 
@@ -116,6 +116,7 @@ void declara_variavel( Atributo& ss,
     if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
       erro( "Variável já declarada: " + lst[i] );
     else {
+    
       ts[ts.size()-1][ lst[i] ] = tipo; 
       ss.c += tipo.decl + " " + lst[i] 
               + trata_dimensoes_decl_var( tipo ) + ";\n";
@@ -180,6 +181,8 @@ void gera_codigo_atribuicao( Atributo& ss,
   ss.c = s1.c + s3.c + "  " 
            + "strcpy( " + s1.v + ", " + s3.v  + " );\n";
   }
+  
+  
 }
 
 string par( Tipo a, Tipo b ) {
@@ -190,7 +193,6 @@ void gera_codigo_operador( Atributo& ss,
                            const Atributo& s1, 
                            const Atributo& s2, 
                            const Atributo& s3 ) {
-  //cout << s1.t.nome << "  " << s3.t.nome << endl;
   string aux;
   if( tro.find( s2.v ) != tro.end() ) {
     if( tro[s2.v].find( par( s1.t, s3.t ) ) != tro[s2.v].end() ) {
@@ -215,14 +217,18 @@ void gera_codigo_operador( Atributo& ss,
 
 string declara_nvar_temp( Tipo t, int qtde ) {
   string aux = "";
-  string aux1; 
+ // string aux1; 
+ 
   for( int i = 1; i <= qtde; i++ )
-    aux += t.decl + " t_" + t.nome + "_" + toString( i ) + ";\n";
+    aux += t.decl + " t_" + t.nome + "_" + toString( i ) + trata_dimensoes_decl_var( t ) + ";\n";
+  /*
   if(t.nome == "string"){
+     cout <<"Here " << endl;
      aux.erase(aux.begin()+aux.size()-1);
      aux.erase(aux.begin()+aux.size()-1);
      aux += "[10000];\n";
   }
+  */
   return aux;  
 }
 
@@ -274,22 +280,7 @@ void gera_cmd_for( Atributo&ss,
   gera_cmd_if( ss, exp ,cmd1 , "" );
     ss.c = atrib.c + "\nfor( true ; true ; true  ){\n" + ss.c +"break;\n" + "\t}\n"; 
 }
-/*  
-// apenas um if, sem o else
-void gera_cmd_if( Atributo& ss, 
-                  const Atributo& exp, 
-                  const Atributo& cmd_then) { 
-  string lbl_then = gera_nome_label( "then" );
-  string lbl_end_if = gera_nome_label( "end_if" );
-  
-  if( exp.t.nome != Boolean.nome )
-    erro( "A expressão do IF deve ser booleana!" );
-    
-  ss.c = exp.c + 
-         "\nif( " + exp.v + " ) goto " + lbl_then + ";\n" +
-         lbl_end_if + ":;\n"; 
-}
-*/
+
 void gera_codigo_funcao( Atributo& ss, 
                          const Atributo& retorno, 
                          string nome, 
@@ -302,6 +293,7 @@ void gera_codigo_funcao( Atributo& ss,
          declara_var_temp( temp_local ) + 
          bloco +
          "return Result;\n}\n";
+         
 }         
 
 void conserta(string &nome){
@@ -390,14 +382,13 @@ DECLS : DECL ';' DECLS { $$.c =  $1.c + $3.c;}
 DECL : IDS ':' TIPO { declara_variavel( $$, $1.lst, $3.t);}
      ;
      
-TIPO : _INTEGER { $$.t = Integer;}
-     
+TIPO : _INTEGER  { $$.t = Integer ; }
      | _REAL { $$.t = Real; }
      | _DOUBLE { $$.t = Double; }
      | _BOOLEAN { $$.t = Bool;}
      | _STRING TAM_STRING { $$.t = $2.t ; }
      ;
-     
+
 TAM_STRING : '[' _CTE_INTEGER ']'
            { $$.t = String; $$.t.dim[0].fim = toInt( $2.v ); }
            | { $$.t = String; }
@@ -407,10 +398,10 @@ IDS : IDS ',' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     ;     
    
 PRINCIPAL : _BEGIN CMDS _END '.'
-            { $$.c = "int main() {\n" + $2.c + "}\n";}
+            { $$.c = "int main() {\n" + $2.c + "}\n"; }
           ;
           
-CMDS : CMD ';' CMDS { $$.c = $1.c + $3.c;  }
+CMDS : CMD ';' CMDS { $$.c = $1.c + $3.c; }
      | {$$.c = "";}
      ;                   
  
