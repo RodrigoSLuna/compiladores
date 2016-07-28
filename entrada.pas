@@ -1,6 +1,6 @@
 HappyHour Main;
 
-Rodada par( a: CopoInteiro ) : VoceBebeu;
+Rodada par( a: CopoInteiro ) : CopoInteiro;
 
     :)
     Result <- a equals 2 ;

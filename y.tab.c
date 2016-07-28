@@ -151,7 +151,7 @@ struct Tipo {
 };
  
 
-Tipo Integer = { "integer", "int", "d" };
+Tipo Integer = { "int", "int", "d" };
 Tipo Real =    { "real", "float", "f" };
 Tipo Double =  { "double", "double", "lf" };
 Tipo Bool = { "bool", "int", "d" };
