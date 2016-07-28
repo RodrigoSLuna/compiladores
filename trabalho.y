@@ -81,6 +81,7 @@ void desempilha_tabela_de_simbolos() {
 string gera_nome_var( Tipo t ) {
   return "t_" + t.nome + "_" + 
    toString( ++(escopo_local ? temp_local : temp_global)[t.nome] );
+   
 }
 
 string gera_nome_label( string cmd ) {
@@ -117,7 +118,7 @@ void declara_variavel( Atributo& ss,
     else {
       ts[ts.size()-1][ lst[i] ] = tipo; 
       ss.c += tipo.decl + " " + lst[i] 
-              + trata_dimensoes_decl_var( tipo ) + ";\n"; 
+              + trata_dimensoes_decl_var( tipo ) + ";\n";
     }  
   }
 }
@@ -139,7 +140,7 @@ void declara_variavel_func( Atributo& ss,
 }
 
 void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
-  cout << "Nome: "<< nome<< " Fim" << endl;
+ // cout << "Nome: "<< nome<< " Fim" << endl;
   vector<string> lst;
   lst.push_back( nome );
   declara_variavel( ss, lst, tipo );
@@ -165,14 +166,19 @@ void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
 void gera_codigo_atribuicao( Atributo& ss, 
                              const Atributo& s1, 
                              const Atributo& s3 ) {
-  if( s1.t.nome == s3.t.nome )
-  { 
+  
+  if( s1.t.nome == s3.t.nome && s3.t.nome != "string" )
+  {
         ss.c = s1.c + s3.c + "  " + s1.v + " = " + s3.v + ";\n";
   }
   else if( s1.t.nome == s3.t.nome &&  s1.t.nome == "string" ) {
-    ss.c = s1.c + s3.c + "  " 
-           + "strncpy( " + s1.v + ", " + s3.v + ", " + 
+   /*
+   ss.c = s1.c + s3.c + "  " 
+           + "strcpy( " + s1.v + ", " + s3.v + ", " + 
            toString( s1.t.dim[0].fim ) + " );\n";
+  */
+  ss.c = s1.c + s3.c + "  " 
+           + "strcpy( " + s1.v + ", " + s3.v  + " );\n";
   }
 }
 
@@ -184,12 +190,21 @@ void gera_codigo_operador( Atributo& ss,
                            const Atributo& s1, 
                            const Atributo& s2, 
                            const Atributo& s3 ) {
+  //cout << s1.t.nome << "  " << s3.t.nome << endl;
+  string aux;
   if( tro.find( s2.v ) != tro.end() ) {
     if( tro[s2.v].find( par( s1.t, s3.t ) ) != tro[s2.v].end() ) {
       ss.t = tro[s2.v][par( s1.t, s3.t )];
-      ss.v = gera_nome_var( ss.t );      
-      ss.c = s1.c + s3.c + "  " + ss.v + " = " + s1.v + s2.v + s3.v 
-             + ";\n";
+      ss.v = gera_nome_var( ss.t );
+      if(s1.t.nome == "string" && s3.t.nome == "string"){
+        ss.c = "  strcat(" + s1.v + ", " + s3.v + ")"
+             +  s1.c + s3.c  +";\n";
+        ss.c += "  strcpy("+ ss.v + ", " + s1.v +");\n";
+      }
+      else{
+        ss.c = s1.c + s3.c + "  " + ss.v + " = " + s1.v + s2.v + s3.v 
+                + ";\n";
+      }
     }
     else
       erro( "O operador '" + s2.v + "' não está definido para os tipos " + s1.t.nome + " e " + s3.t.nome + "." );
@@ -200,10 +215,14 @@ void gera_codigo_operador( Atributo& ss,
 
 string declara_nvar_temp( Tipo t, int qtde ) {
   string aux = "";
-   
+  string aux1; 
   for( int i = 1; i <= qtde; i++ )
     aux += t.decl + " t_" + t.nome + "_" + toString( i ) + ";\n";
-    
+  if(t.nome == "string"){
+     aux.erase(aux.begin()+aux.size()-1);
+     aux.erase(aux.begin()+aux.size()-1);
+     aux += "[10000];\n";
+  }
   return aux;  
 }
 
@@ -304,7 +323,7 @@ void conserta(string &nome){
 
 %token _CTE_STRING _CTE_INTEGER
 
-%nonassoc '>' '<' '='
+%nonassoc '>' '<' '=' ','
 %left '+' '-'
 %left '*' '/' _MOD
 %right '^' '&' '|'
@@ -356,7 +375,7 @@ FUNCTION : _FUNCTION _ID { escopo_local = true;
              desempilha_tabela_de_simbolos(); }
          ;        
          
-PARAMETROS : DECL ';' PARAMETROS
+PARAMETROS : DECL ';' PARAMETROS //{ $$.c = $1.c + $3.c;}
            | DECL
            ;     
            
@@ -372,6 +391,7 @@ DECL : IDS ':' TIPO { declara_variavel( $$, $1.lst, $3.t);}
      ;
      
 TIPO : _INTEGER { $$.t = Integer;}
+     
      | _REAL { $$.t = Real; }
      | _DOUBLE { $$.t = Double; }
      | _BOOLEAN { $$.t = Bool;}
@@ -417,8 +437,8 @@ INDICE : '[' EXPS ']' '[' EXPS ']'
        | '[' EXPS ']'
        ;          
        
-EXPS : E ',' EXPS
-     | E
+EXPS : E ',' EXPS { $$.c = $1.c + $3.c; $$.v = $1.v + " , " + $3.v; }
+     | E 
      ;
      
 CMD_WHILE : _WHILE '(' E ')' CMD { gera_cmd_while( $$, $3, $5  );  }
@@ -463,11 +483,11 @@ F : _CTE_STRING { $$ = $1; $$.t = String; }
   | _CTE_INTEGER { $$ = $1; $$.t = Integer; }
   | _ID         { busca_tipo_da_variavel( $$, $1 ); }
   | '(' E ')'   {$$ = $2;}
-  | _ID '(' E ')' { $$.v = gera_nome_var( tf[$1.v] );
+  | _ID '(' EXPS ')' { $$.v = gera_nome_var( tf[$1.v] );
                     $$.c = $3.c +
                     " " + $$.v + " = " + $1.v + "( " + $3.v + " );\n";
                     $$.t = tf[ $1.v ] ; }
-  ;     
+
  
 %%
 
@@ -507,7 +527,6 @@ void inicializa_tabela_de_resultado_de_operacoes() {
   tro[ "-" ] = r; 
   tro[ "*" ] = r; 
   tro[ "/" ] = r; 
-
   r[par(Char, Char)] = String;      
   r[par(String, Char)] = String;      
   r[par(Char, String)] = String;    
@@ -531,6 +550,7 @@ void inicializa_tabela_de_resultado_de_operacoes() {
   tro[">"] = r;
   tro["<"] = r;
   tro["<="] = r;
+  
 }
 
 void inicializa_tipos() {
